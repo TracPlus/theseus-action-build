@@ -1,0 +1,53 @@
+name: 'Build'
+description: 'Builds c# project and generates artifacts'
+inputs:
+  version:
+    description: 'The version generated in the prepare step'
+    required: true 
+  project-path:  # id of input
+    description: 'Path to the deployable project root.'
+    required: true
+  project-file:  # id of input
+    description: 'Name of the csproj file.'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/download-artifact@master
+        with:
+          name: workspace
+          path: .
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
+    - name: Set env to Debug
+      if: (endsWith(github.ref, '/develop') && endsWith(github.ref, '/main')) != true
+      run: |
+        echo "::set-env name=ENVIRONMENT::Debug"
+    - name: Set env to staging
+      if: endsWith(github.ref, '/develop')
+      run: |
+        echo "::set-env name=ENVIRONMENT::Release"
+    - name: Set env to production
+      if: endsWith(github.ref, '/main')
+      run: |
+        echo "::set-env name=ENVIRONMENT::Staging"
+    - name: Transform Configuration
+      run: |
+          dotnet tool install --global dotnet-xdt
+          dotnet xdt --source ./${{ inputs.project-path }}/App.config --transform ./${{ inputs.project-path }}/App.${{ env.ENVIRONMENT }}.config --output ./${{ inputs.project-path }}/App.config
+    - name: Build
+      run: |
+        dotnet build -p:Version=${{ inputs.version }} --self-contained --runtime linux-x64 --configuration ${{ env.ENVIRONMENT }} ${{ inputs.project-path }}/${{ inputs.project-file }}
+    - name: Generate Artifact
+      if: endsWith(github.ref, '/develop') && endsWith(github.ref, '/main')
+      run: |
+        dotnet publish --no-build --no-restore --self-contained --runtime linux-x64 --configuration ${{ env.ENVIRONMENT }} ${{ inputs.project-path }}/${{ inputs.project-file }}
+    - uses: actions/upload-artifact@master
+      with:
+        name: publish
+        path: |
+          ${{ inputs.project-path }}/bin/Staging/net6.0/linux-x64/publish
+          ${{ inputs.project-path }}/Kubernetes
+          ${{ inputs.project-path }}/Dockerfile
+        retention-days: 1
