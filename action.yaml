@@ -14,24 +14,24 @@ runs:
   using: "composite"
   steps:
     - uses: actions/download-artifact@master
-        with:
-          name: workspace
-          path: .
+      with:
+        name: workspace
+        path: .
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '6.0.x'
     - name: Set env to Debug
-      if: (endsWith(github.ref, '/develop') && endsWith(github.ref, '/main')) != true
+      if: (endsWith(github.ref, '/development') && endsWith(github.ref, '/main')) != true
       run: |
         echo "::set-env name=ENVIRONMENT::Debug"
     - name: Set env to staging
-      if: endsWith(github.ref, '/develop')
+      if: endsWith(github.ref, '/development')
       run: |
-        echo "::set-env name=ENVIRONMENT::Release"
+        echo "::set-env name=ENVIRONMENT::Staging"
     - name: Set env to production
       if: endsWith(github.ref, '/main')
       run: |
-        echo "::set-env name=ENVIRONMENT::Staging"
+        echo "::set-env name=ENVIRONMENT::Release"
     - name: Transform Configuration
       run: |
           dotnet tool install --global dotnet-xdt
@@ -40,10 +40,11 @@ runs:
       run: |
         dotnet build -p:Version=${{ inputs.version }} --self-contained --runtime linux-x64 --configuration ${{ env.ENVIRONMENT }} ${{ inputs.project-path }}/${{ inputs.project-file }}
     - name: Generate Artifact
-      if: endsWith(github.ref, '/develop') && endsWith(github.ref, '/main')
+      if: endsWith(github.ref, '/development') && endsWith(github.ref, '/main')
       run: |
         dotnet publish --no-build --no-restore --self-contained --runtime linux-x64 --configuration ${{ env.ENVIRONMENT }} ${{ inputs.project-path }}/${{ inputs.project-file }}
     - uses: actions/upload-artifact@master
+      if: endsWith(github.ref, '/development') && endsWith(github.ref, '/main')
       with:
         name: publish
         path: |
