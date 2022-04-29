@@ -15,6 +15,7 @@ runs:
   steps:
     - name: Echo version
       run: echo ${{ inputs.version }}
+      shell: bash
     - uses: actions/download-artifact@master
       with:
         name: workspace
