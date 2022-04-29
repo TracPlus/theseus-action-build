@@ -28,7 +28,7 @@ runs:
     - name: Set env to staging
       if: endsWith(github.ref, '/development')
       run: |
-        echo "ENVIRONMENT==Staging" >> $GITHUB_ENV
+        echo "ENVIRONMENT=Staging" >> $GITHUB_ENV
       shell: bash
     - name: Set env to production
       if: endsWith(github.ref, '/main')
