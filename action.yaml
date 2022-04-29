@@ -23,17 +23,17 @@ runs:
     - name: Set env to Debug
       if: (endsWith(github.ref, '/development') && endsWith(github.ref, '/main')) != true
       run: |
-        echo "::set-env name=ENVIRONMENT::Debug"
+        echo "ENVIRONMENT=Debug" >> $GITHUB_ENV
       shell: bash
     - name: Set env to staging
       if: endsWith(github.ref, '/development')
       run: |
-        echo "::set-env name=ENVIRONMENT::Staging"
+        echo "ENVIRONMENT==Staging" >> $GITHUB_ENV
       shell: bash
     - name: Set env to production
       if: endsWith(github.ref, '/main')
       run: |
-        echo "::set-env name=ENVIRONMENT::Release"
+        echo "ENVIRONMENT=Release" >> $GITHUB_ENV
       shell: bash
     - name: Transform Configuration
       run: |
