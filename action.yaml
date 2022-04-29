@@ -13,6 +13,8 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Echo version
+      run: echo ${{ inputs.version }}
     - uses: actions/download-artifact@master
       with:
         name: workspace
