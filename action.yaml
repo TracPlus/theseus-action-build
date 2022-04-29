@@ -13,9 +13,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Echo version
-      run: echo ${{ inputs.version }}
-      shell: bash
     - uses: actions/download-artifact@master
       with:
         name: workspace
@@ -48,16 +45,16 @@ runs:
         dotnet build -p:Version=${{ inputs.version }} --self-contained --runtime linux-x64 --configuration ${{ env.ENVIRONMENT }} ${{ inputs.project-path }}/${{ inputs.project-file }}
       shell: bash
     - name: Generate Artifact
-      if: endsWith(github.ref, '/development') && endsWith(github.ref, '/main')
+      if: endsWith(github.ref, '/development') || endsWith(github.ref, '/main')
       run: |
         dotnet publish --no-build --no-restore --self-contained --runtime linux-x64 --configuration ${{ env.ENVIRONMENT }} ${{ inputs.project-path }}/${{ inputs.project-file }}
       shell: bash
     - uses: actions/upload-artifact@master
-      if: endsWith(github.ref, '/development') && endsWith(github.ref, '/main')
+      if: endsWith(github.ref, '/development') || endsWith(github.ref, '/main')
       with:
         name: publish
         path: |
-          ${{ inputs.project-path }}/bin/Staging/net6.0/linux-x64/publish
+          ${{ inputs.project-path }}/bin/${{ env.ENVIRONMENT }}/net6.0/linux-x64/publish
           ${{ inputs.project-path }}/Kubernetes
           ${{ inputs.project-path }}/Dockerfile
         retention-days: 1
