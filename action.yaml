@@ -20,6 +20,13 @@ runs:
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '6.0.x'
+    - run: echo ${{ inputs.version }} >> version
+      shell: bash
+    - uses: actions/upload-artifact@master
+      with:
+        name: temp-debug-version
+        path: version
+        retention-days: 1
     - name: Set env to Debug
       if: (endsWith(github.ref, '/development') && endsWith(github.ref, '/main')) != true
       run: |
