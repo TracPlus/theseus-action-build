@@ -10,6 +10,10 @@ inputs:
   project-file:  # id of input
     description: 'Name of the csproj file.'
     required: true
+  transformConfig: 
+    description: 'Transform app configurations based on build configuration'
+    required: true
+    default: true
 runs:
   using: "composite"
   steps:
@@ -36,6 +40,7 @@ runs:
         echo "ENVIRONMENT=Release" >> $GITHUB_ENV
       shell: bash
     - name: Transform Configuration
+      if: inputs.transformConfig == true
       run: |
           dotnet tool install --global dotnet-xdt
           dotnet xdt --source ./${{ inputs.project-path }}/App.config --transform ./${{ inputs.project-path }}/App.${{ env.ENVIRONMENT }}.config --output ./${{ inputs.project-path }}/App.config
