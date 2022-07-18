@@ -14,6 +14,10 @@ inputs:
     description: 'Transform app configurations based on build configuration'
     required: true
     default: true
+  target:
+    description: 'The dotnet target/runtime environment.'
+    required: false
+    default: 'linux-x64'
 runs:
   using: "composite"
   steps:
@@ -47,19 +51,19 @@ runs:
       shell: bash
     - name: Build
       run: |
-        dotnet build -p:Version=${{ inputs.version }} --self-contained --runtime linux-x64 --configuration ${{ env.ENVIRONMENT }} ${{ inputs.project-path }}/${{ inputs.project-file }}
+        dotnet build -p:Version=${{ inputs.version }} --self-contained --runtime ${{inputs.target}} --configuration ${{ env.ENVIRONMENT }} ${{ inputs.project-path }}/${{ inputs.project-file }}
       shell: bash
     - name: Generate Artifact
       if: endsWith(github.ref, '/development') || endsWith(github.ref, '/main')
       run: |
-        dotnet publish --no-build --no-restore --self-contained --runtime linux-x64 --configuration ${{ env.ENVIRONMENT }} ${{ inputs.project-path }}/${{ inputs.project-file }}
+        dotnet publish --no-build --no-restore --self-contained --runtime ${{inputs.target}} --configuration ${{ env.ENVIRONMENT }} ${{ inputs.project-path }}/${{ inputs.project-file }}
       shell: bash
     - uses: actions/upload-artifact@master
       if: endsWith(github.ref, '/development') || endsWith(github.ref, '/main')
       with:
         name: publish
         path: |
-          ${{ inputs.project-path }}/bin/${{ env.ENVIRONMENT }}/net6.0/linux-x64/publish
+          ${{ inputs.project-path }}/bin/${{ env.ENVIRONMENT }}/net6.0/${{inputs.target}}/publish
           ${{ inputs.project-path }}/Kubernetes
           ${{ inputs.project-path }}/Dockerfile
         retention-days: 1
