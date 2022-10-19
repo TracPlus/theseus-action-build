@@ -48,10 +48,14 @@ runs:
       run: |
         echo "ENVIRONMENT=Release" >> $GITHUB_ENV
       shell: bash
+    - name: Transform Install
+      if: ${{ inputs.transform-configuration == 'true' && inputs.setup-environment == 'true' }}
+      run: |
+        dotnet tool install --global dotnet-xdt
+      shell: bash
     - name: Transform Configuration
       if: ${{ inputs.transform-configuration == 'true' }}
       run: |
-          dotnet tool install --global dotnet-xdt
           dotnet xdt --source ./${{ inputs.project-path }}/App.config --transform ./${{ inputs.project-path }}/App.${{ env.ENVIRONMENT }}.config --output ./${{ inputs.project-path }}/App.config
       shell: bash
     - name: Build
