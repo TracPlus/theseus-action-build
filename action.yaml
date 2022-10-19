@@ -14,6 +14,10 @@ inputs:
     description: 'Transform app configurations based on build configuration'
     required: true
     default: true
+  setup-environment:
+    description: 'Setup dotnet build environment'
+    required: false
+    default: true
   target:
     description: 'The dotnet target/runtime environment.'
     required: false
