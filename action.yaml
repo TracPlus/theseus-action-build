@@ -17,7 +17,7 @@ inputs:
   setup-environment:
     description: 'Setup dotnet build environment'
     required: false
-    default: true
+    default: 'true'
   target:
     description: 'The dotnet target/runtime environment.'
     required: false
