@@ -22,6 +22,10 @@ inputs:
     description: 'The dotnet target/runtime environment.'
     required: false
     default: 'linux-x64'
+  artifact-name:
+    description: 'Name for the built artifact to be uploaded as.'
+    required: false
+    default: 'publish'
 runs:
   using: "composite"
   steps:
@@ -71,7 +75,7 @@ runs:
     - uses: actions/upload-artifact@master
       if: endsWith(github.ref, '/development') || endsWith(github.ref, '/main')
       with:
-        name: publish
+        name: ${{ inputs.artifact-name }}
         path: |
           ${{ inputs.project-path }}/bin/${{ env.ENVIRONMENT }}/net6.0/${{inputs.target}}/publish
           ${{ inputs.project-path }}/Kubernetes
