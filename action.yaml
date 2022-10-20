@@ -26,6 +26,7 @@ runs:
   using: "composite"
   steps:
     - uses: actions/download-artifact@master
+      if: ${{ inputs.setup-environment == 'true' }}
       with:
         name: workspace
         path: .
