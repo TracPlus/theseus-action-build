@@ -80,4 +80,5 @@ runs:
           ${{ inputs.project-path }}/bin/${{ env.ENVIRONMENT }}/net6.0/${{inputs.target}}/publish
           ${{ inputs.project-path }}/Kubernetes
           ${{ inputs.project-path }}/Dockerfile
+          ${{ inputs.project-path }}/app.yaml
         retention-days: 1
