@@ -37,7 +37,9 @@ runs:
     - uses: actions/setup-dotnet@v3
       if: ${{ inputs.setup-environment == 'true' }}
       with:
-        dotnet-version: '6.0.x'
+        dotnet-version: |
+          6.x
+          8.x
     - name: Set env to Debug
       if: (endsWith(github.ref, '/development') && endsWith(github.ref, '/main')) != true
       run: |
