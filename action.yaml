@@ -84,11 +84,9 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/download-artifact@master
-      if: ${{ inputs.setup-environment == 'true' }}
+    - uses: actions/checkout@v4
       with:
-        name: workspace
-        path: .
+        fetch-depth: 0
     - uses: actions/setup-dotnet@v3
       if: ${{ inputs.setup-environment == 'true' }}
       with:
