@@ -85,6 +85,14 @@ inputs:
     description: 'Dotnet targets for publish.'
     required: 'false'
     default: 'net6.0'
+  cluster:
+    description: 'Name of the cluster to deploy the kubernetes deployment to.'
+    required: false
+    default: 'main'
+  zone:
+    description: 'The zone the cluster resources are running in.'
+    required: false
+    default: 'us-central1-a'
 runs:
   using: "composite"
   steps:
