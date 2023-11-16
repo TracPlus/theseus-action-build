@@ -209,7 +209,7 @@ runs:
     - name: Set Cluster Credentials
       if: endsWith(github.ref, '/development') || endsWith(github.ref, '/main')
       run: |-
-        gcloud container clusters get-credentials main --zone us-central1-a --project ${{ env.GCP_PROJECT }}
+        gcloud container clusters get-credentials ${{ inputs.cluster }} --zone ${{ inputs.zone }} --project ${{ env.GCP_PROJECT }}
       shell: bash
     # Apply kubernetes changes.
     - name: Deploy to Kubernetes
