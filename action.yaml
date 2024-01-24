@@ -187,10 +187,13 @@ runs:
       run: |-
         gcloud auth configure-docker us-central1-docker.pkg.dev
       shell: bash
-    - name: Docker Build, Tag and Push
-      if: endsWith(github.ref, '/development') || endsWith(github.ref, '/main')
+    - name: Docker Build & Tag
       run: |-
         docker build --build-arg CONFIGURATION=${{ env.CONFIGURATION }} --build-arg TARGET=${{inputs.target}} --build-arg PROJECT=${{ env.GCP_PROJECT }} -t us-central1-docker.pkg.dev/${{ env.GCP_PROJECT }}/tracstar/${{ inputs.container-id }}:${{ inputs.version }} ./${{ inputs.project-path }}
+      shell: bash
+    - name: Docker Push
+      if: endsWith(github.ref, '/development') || endsWith(github.ref, '/main')
+      run: |-
         docker push us-central1-docker.pkg.dev/${{ env.GCP_PROJECT }}/tracstar/${{ inputs.container-id }}:${{ inputs.version }}
       shell: bash
     - name: Replace variables in production Kubernetes config
