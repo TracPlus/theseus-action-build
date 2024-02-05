@@ -141,7 +141,7 @@ runs:
         dotnet publish --no-build --no-restore --self-contained --runtime ${{inputs.target}} --framework ${{inputs.dotnet-framework}} --configuration ${{ env.ENVIRONMENT }} ${{ inputs.project-path }}/${{ inputs.project-file }}
       shell: bash
     - name: Set env to staging
-      if: endsWith(github.ref, '/main') == false
+      if: endsWith(github.ref, '/development')
       run: |-
         echo "GCP_PROJECT=${{ inputs.gcp-staging-id }}" >> $GITHUB_ENV
         echo "CONFIGURATION=Staging" >> $GITHUB_ENV
@@ -187,13 +187,10 @@ runs:
       run: |-
         gcloud auth configure-docker us-central1-docker.pkg.dev
       shell: bash
-    - name: Docker Build & Tag
-      run: |-
-        docker build --build-arg CONFIGURATION=${{ env.CONFIGURATION }} --build-arg TARGET=${{inputs.target}} --build-arg PROJECT=${{ env.GCP_PROJECT }} -t us-central1-docker.pkg.dev/${{ env.GCP_PROJECT }}/tracstar/${{ inputs.container-id }}:${{ inputs.version }} ./${{ inputs.project-path }}
-      shell: bash
-    - name: Docker Push
+    - name: Docker Build, Tag and Push
       if: endsWith(github.ref, '/development') || endsWith(github.ref, '/main')
       run: |-
+        docker build --build-arg CONFIGURATION=${{ env.CONFIGURATION }} --build-arg TARGET=${{inputs.target}} --build-arg PROJECT=${{ env.GCP_PROJECT }} -t us-central1-docker.pkg.dev/${{ env.GCP_PROJECT }}/tracstar/${{ inputs.container-id }}:${{ inputs.version }} ./${{ inputs.project-path }} &&
         docker push us-central1-docker.pkg.dev/${{ env.GCP_PROJECT }}/tracstar/${{ inputs.container-id }}:${{ inputs.version }}
       shell: bash
     - name: Replace variables in production Kubernetes config
